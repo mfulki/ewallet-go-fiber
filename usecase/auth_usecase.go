@@ -12,7 +12,7 @@ import (
 )
 
 type AuthUsecase interface {
-	Login(user *entity.User, ctx context.Context) (*string, error)
+	Login(user entity.User, ctx context.Context) (*string, error)
 	Register(user *entity.User, ctx context.Context) (*entity.User, error)
 	ForgotPassword(ctx context.Context, user *entity.User) (*entity.TokenPassword, error)
 	ResetPassword(ctx context.Context, token string, password string) error
@@ -32,7 +32,7 @@ func NewAuthUsecaseImpl(userRepository repository.UserRepository, walletReposito
 	}
 }
 
-func (u *authUsecaseImpl) Login(user *entity.User, ctx context.Context) (*string, error) {
+func (u *authUsecaseImpl) Login(user entity.User, ctx context.Context) (*string, error) {
 
 	password := user.Password
 	users, err := u.userRepository.Login(user, ctx)

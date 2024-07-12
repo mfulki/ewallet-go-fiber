@@ -14,7 +14,7 @@ type UserRepository interface {
 	GetRegisteredUserIdByEmail(Email string, ctx context.Context) (*int, error)
 	GetRegisteredUserId(username string, ctx context.Context) (*int, error)
 	RegisterUser(user *entity.User, ctx context.Context) (*entity.User, error)
-	Login(user *entity.User, ctx context.Context) (*entity.User, error)
+	Login(user entity.User, ctx context.Context) (*entity.User, error)
 	GetUserDetails(ctx context.Context, username string) (*entity.User, error)
 	GetUserIdFromEmail(ctx context.Context, user *entity.User) (*entity.User, error)
 	ResetPassword(ctx context.Context, password string, userId int) error
@@ -68,7 +68,7 @@ func (r *userRepositoryImpl) RegisterUser(user *entity.User, ctx context.Context
 	}
 	return user, err
 }
-func (r *userRepositoryImpl) Login(user *entity.User, ctx context.Context) (*entity.User, error) {
+func (r *userRepositoryImpl) Login(user entity.User, ctx context.Context) (*entity.User, error) {
 	q := query.Login
 	err := r.db.QueryRowContext(ctx, q, user.Email).Scan(&user.Password, &user.Name)
 	if err != nil {
@@ -77,7 +77,7 @@ func (r *userRepositoryImpl) Login(user *entity.User, ctx context.Context) (*ent
 		}
 		return nil, apperrors.ErrInternalServer()
 	}
-	return user, err
+	return &user, err
 }
 
 func (r *userRepositoryImpl) GetUserDetails(ctx context.Context, username string) (*entity.User, error) {
