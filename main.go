@@ -1,7 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/mfulki/ewallet-go-fiber/config"
 	database "github.com/mfulki/ewallet-go-fiber/db"
@@ -22,5 +27,24 @@ func main() {
 	defer db.Close()
 	router := server.NewServer(db).SetupServer()
 	router.Listen(Addr)
+
+	quit := make(chan os.Signal, 1)
+
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Println("Shutdown Server ...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := router.ShutdownWithContext(ctx); err != nil {
+		log.Fatal("Server Shutdown:", err)
+	}
+
+	select {
+	case <-ctx.Done():
+		log.Println("timeout of 5 seconds.")
+	default:
+		log.Println("Server exiting")
+	}
 
 }
