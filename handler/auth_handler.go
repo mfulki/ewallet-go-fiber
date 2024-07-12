@@ -2,7 +2,9 @@ package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/mfulki/ewallet-go-fiber/constant"
 	"github.com/mfulki/ewallet-go-fiber/dto/request"
+	"github.com/mfulki/ewallet-go-fiber/dto/response"
 	"github.com/mfulki/ewallet-go-fiber/usecase"
 	"github.com/mfulki/ewallet-go-fiber/utils"
 )
@@ -32,7 +34,10 @@ func (h *AuthHandler) Login(ctx *fiber.Ctx) error {
 
 	}
 
-	resp := authresp.ResponseAuth{Message: constant.MessageOK, Data: *token}
+	resp := response.Body{
+		Message: constant.LoginPassedMsg,
+		Data:    *token,
+	}
 	ctx.Status(fiber.StatusOK).JSON(resp)
 	return nil
 
